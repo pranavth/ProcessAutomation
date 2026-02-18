@@ -1,0 +1,212 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_teams": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pt_sharedteams_49ea3"
+        },
+        "api": {
+          "name": "shared_teams"
+        }
+      },
+      "shared_office365": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pt_sharedoffice365_57e16"
+        },
+        "api": {
+          "name": "shared_office365"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "Recurrence": {
+          "recurrence": {
+            "frequency": "Day",
+            "interval": 1,
+            "timeZone": "India Standard Time",
+            "startTime": "2025-09-22T04:00:00Z"
+          },
+          "evaluatedRecurrence": {
+            "frequency": "Day",
+            "interval": 1,
+            "timeZone": "India Standard Time",
+            "startTime": "2025-09-22T04:00:00Z"
+          },
+          "metadata": {
+            "operationMetadataId": "4cd760e3-2952-4259-a47e-2833e9255118"
+          },
+          "type": "Recurrence"
+        }
+      },
+      "actions": {
+        "varBirthdayList": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "c01f329d-4e9d-416e-8857-03314c2aef04"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varBirthdayList",
+                "type": "object",
+                "value": {
+                  "Shweta Sakpal": "23/01",
+                  "Pravin Khambal": "14/02",
+                  "Sumit Waman": "10/03",
+                  "Yogesh Khanse": "01/06",
+                  "Pranav Thakare": "02/07",
+                  "Shridhar Sahu": "04/08",
+                  "Sumit Dige": "10/10",
+                  "Suchit Kothawade": "26/10",
+                  "Rahul Bhosale": "05/11",
+                  "Ruturaj Kulkarni": "19/11",
+                  "Rahul Patil": "29/11",
+                  "Vinay Bhide": "13/12"
+                }
+              }
+            ]
+          }
+        },
+        "List_members_-_Airoli_Office": {
+          "runAfter": {
+            "varBirthdayList": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a77c1d28-d9ec-4c1b-bd14-9eaf17aa5156"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "threadType": "groupchat",
+              "body/recipient": "19:3279340a7e9f4e9a8efbdb8dc08d8583@thread.v2"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+              "connectionName": "shared_teams",
+              "operationId": "ListMembers"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Apply_to_each_-_List_members": {
+          "foreach": "@body('Available_list_members_-_Airoli_Office')",
+          "actions": {
+            "Condition_-_Is_Today_Their_Birthday": {
+              "actions": {
+                "Day_with_ordinal_suffix_formatter”": {
+                  "metadata": {
+                    "operationMetadataId": "6fcc1344-fb90-4ca4-805c-7f54caa81439"
+                  },
+                  "type": "Compose",
+                  "inputs": "@concat(string(int(formatDateTime(utcNow(), 'dd'))), if(or(equals(mod(int(formatDateTime(utcNow(), 'dd')), 100), 11), equals(mod(int(formatDateTime(utcNow(), 'dd')), 100), 12), equals(mod(int(formatDateTime(utcNow(), 'dd')), 100), 13)), 'th', if(equals(mod(int(formatDateTime(utcNow(), 'dd')), 10), 1), 'st', if(equals(mod(int(formatDateTime(utcNow(), 'dd')), 10), 2), 'nd', if(equals(mod(int(formatDateTime(utcNow(), 'dd')), 10), 3), 'rd', 'th')))), ' ', formatDateTime(utcNow(), 'MMMM'))"
+                },
+                "Send_an_email_(V2)": {
+                  "runAfter": {
+                    "Post_card_in_a_chat_or_channel": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "emailMessage/To": "@items('Apply_to_each_-_List_members')?['email']",
+                      "emailMessage/Subject": "Birthday greeting",
+                      "emailMessage/Body": "<p class=\"editor-paragraph\">\n</p><div class=\"ac-container ac-adaptiveCard\" style=\"display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box; flex: 0 0 auto; padding: 20px; margin: 0px; background-color: rgb(255, 255, 255);\"><div class=\"ac-textBlock\" id=\"ac_birthdayTitle\" style=\"overflow: hidden; font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif; font-size: 26px; color: rgb(46, 137, 252); font-weight: 600; text-align: center; line-height: 34.58px; overflow-wrap: break-word; box-sizing: border-box; flex: 0 0 auto;\">Happy Birthday @{items('Apply_to_each_-_List_members')?['displayName']}! 🎂</div><div class=\"ac-horizontal-separator\" style=\"height: 20px; overflow: hidden; flex: 0 0 auto; margin-right: 0px; margin-left: 0px;\"></div><div class=\"ac-textBlock\" id=\"ac_textMessage\" style=\"overflow: hidden; font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif; font-size: 17px; color: rgb(51, 51, 51); font-weight: 400; text-align: start; line-height: 22.61px; overflow-wrap: break-word; box-sizing: border-box; flex: 0 0 auto;\">Today is @{outputs('Day_with_ordinal_suffix_formatter”')}, your special day!</div><div class=\"ac-horizontal-separator\" style=\"height: 20px; overflow: hidden; flex: 0 0 auto; margin-right: 0px; margin-left: 0px;\"></div><div class=\"ac-textBlock\" id=\"ac_birthdayMessage\" style=\"overflow: hidden; font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif; font-size: 21px; color: rgb(204, 51, 0); font-weight: 400; text-align: start; line-height: 27.93px; overflow-wrap: break-word; box-sizing: border-box; flex: 0 0 auto;\">May God add many more years of happiness and good health to your life 🥳🎊✨🎉💥<br style=\"margin-top: 0px; width: 100%;\">\nHappy birthday -- have a blessed day!!! 🍰😇\n<br style=\"margin-bottom: 0px;\">God Bless You 🙏 ✨</div><div class=\"ac-horizontal-separator\" style=\"height: 20px; overflow: hidden; flex: 0 0 auto; display: flex; margin-right: 0px; margin-left: 0px;\"></div><div style=\"display: flex; align-items: flex-start; justify-content: flex-start; box-sizing: border-box; flex: 0 0 auto;\"><img class=\"ac-image\" src=\"https://birthdaycake24.com/uploads/worigin/2018/12/04/birthday-with-candles-5c05ef000bbf0_086984e06a55e7031c51fc4098fa3f07.gif\" style=\"min-width: 0px; width: 100%; max-height: 100%;\"></div></div>\n<p></p>\n\n\n<p>Regards,</p>\n<p><b>Pranav Thakare</b></p>",
+                      "emailMessage/Importance": "Normal"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+                      "connectionName": "shared_office365",
+                      "operationId": "SendEmailV2"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "Post_card_in_a_chat_or_channel": {
+                  "runAfter": {
+                    "Day_with_ordinal_suffix_formatter”": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "poster": "Flow bot",
+                      "location": "Group chat",
+                      "body/recipient": "19:3279340a7e9f4e9a8efbdb8dc08d8583@thread.v2",
+                      "body/messageBody": "{\n    \"type\": \"AdaptiveCard\",\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.5\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"Happy Birthday @{items('Apply_to_each_-_List_members')?['displayName']}! 🎂\",\n            \"wrap\": true,\n            \"size\": \"ExtraLarge\",\n            \"weight\": \"Bolder\",\n            \"color\": \"Accent\",\n            \"horizontalAlignment\": \"Center\",\n            \"style\": \"default\",\n            \"id\": \"ac_birthdayTitle\",\n            \"spacing\": \"ExtraLarge\",\n            \"fontType\": \"Default\"\n        },\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"Today is @{outputs('Day_with_ordinal_suffix_formatter”')}, your special day!\",\n            \"wrap\": true,\n            \"id\": \"ac_textMessage\",\n            \"style\": \"default\",\n            \"fontType\": \"Default\",\n            \"size\": \"Medium\",\n            \"color\": \"Default\"\n        },\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"May God add many more years of happiness and good health to your life 🥳🎊✨🎉💥\\n\\nHappy birthday -- have a blessed day!!! 🍰😇\\n\\nGod Bless You 🙏 ✨\",\n            \"wrap\": true,\n            \"id\": \"ac_birthdayMessage\",\n            \"style\": \"default\",\n            \"fontType\": \"Default\",\n            \"size\": \"Large\",\n            \"color\": \"Attention\"\n        },\n        {\n            \"type\": \"Image\",\n            \"url\": \"https://birthdaycake24.com/uploads/worigin/2018/12/04/birthday-with-candles-5c05ef000bbf0_086984e06a55e7031c51fc4098fa3f07.gif\",\n            \"size\": \"Stretch\"\n        }\n    ]\n}"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                      "connectionName": "shared_teams",
+                      "operationId": "PostCardToConversation"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              },
+              "else": {
+                "actions": {}
+              },
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@variables('varBirthdayList')[items('Apply_to_each_-_List_members')?['displayName']]",
+                      "@formatDateTime(utcNow(), 'dd/MM')"
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "043b90b7-16fe-45fa-b839-54c9c4098882"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "Available_list_members_-_Airoli_Office": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6eff18c4-9d42-4e06-8c4d-5f7c5f9ae258"
+          },
+          "type": "Foreach"
+        },
+        "Available_list_members_-_Airoli_Office": {
+          "runAfter": {
+            "List_members_-_Airoli_Office": [
+              "Succeeded"
+            ]
+          },
+          "type": "Query",
+          "inputs": {
+            "from": "@outputs('List_members_-_Airoli_Office')?['body/value']",
+            "where": "@not(empty(item()?['displayName']))"
+          }
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
