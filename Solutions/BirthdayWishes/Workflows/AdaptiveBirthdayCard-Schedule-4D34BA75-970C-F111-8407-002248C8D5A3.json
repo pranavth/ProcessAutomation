@@ -41,12 +41,6 @@
             "timeZone": "India Standard Time",
             "startTime": "2025-09-22T04:00:00Z"
           },
-          "evaluatedRecurrence": {
-            "frequency": "Day",
-            "interval": 1,
-            "timeZone": "India Standard Time",
-            "startTime": "2025-09-22T04:00:00Z"
-          },
           "metadata": {
             "operationMetadataId": "4cd760e3-2952-4259-a47e-2833e9255118"
           },
@@ -55,7 +49,11 @@
       },
       "actions": {
         "varBirthdayList": {
-          "runAfter": {},
+          "runAfter": {
+            "Compose_-_Today's_datetime": [
+              "Succeeded"
+            ]
+          },
           "metadata": {
             "operationMetadataId": "c01f329d-4e9d-416e-8857-03314c2aef04"
           },
@@ -100,10 +98,9 @@
             },
             "host": {
               "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
-              "connectionName": "shared_teams",
-              "operationId": "ListMembers"
-            },
-            "authentication": "@parameters('$authentication')"
+              "operationId": "ListMembers",
+              "connectionName": "shared_teams"
+            }
           }
         },
         "Apply_to_each_-_List_members": {
@@ -134,10 +131,9 @@
                     },
                     "host": {
                       "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
-                      "connectionName": "shared_office365",
-                      "operationId": "SendEmailV2"
-                    },
-                    "authentication": "@parameters('$authentication')"
+                      "operationId": "SendEmailV2",
+                      "connectionName": "shared_office365"
+                    }
                   }
                 },
                 "Post_card_in_a_chat_or_channel": {
@@ -156,10 +152,9 @@
                     },
                     "host": {
                       "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
-                      "connectionName": "shared_teams",
-                      "operationId": "PostCardToConversation"
-                    },
-                    "authentication": "@parameters('$authentication')"
+                      "operationId": "PostCardToConversation",
+                      "connectionName": "shared_teams"
+                    }
                   }
                 }
               },
@@ -203,6 +198,11 @@
             "from": "@outputs('List_members_-_Airoli_Office')?['body/value']",
             "where": "@not(empty(item()?['displayName']))"
           }
+        },
+        "Compose_-_Today's_datetime": {
+          "runAfter": {},
+          "type": "Compose",
+          "inputs": "@utcNow()"
         }
       }
     },
