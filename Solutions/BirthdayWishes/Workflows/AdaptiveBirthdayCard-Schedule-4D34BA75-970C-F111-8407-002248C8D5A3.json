@@ -50,7 +50,7 @@
       "actions": {
         "varBirthdayList": {
           "runAfter": {
-            "Compose_-_Today's_datetime": [
+            "Compose_-_date": [
               "Succeeded"
             ]
           },
@@ -201,6 +201,15 @@
         },
         "Compose_-_Today's_datetime": {
           "runAfter": {},
+          "type": "Compose",
+          "inputs": "@utcNow()"
+        },
+        "Compose_-_date": {
+          "runAfter": {
+            "Compose_-_Today's_datetime": [
+              "Succeeded"
+            ]
+          },
           "type": "Compose",
           "inputs": "@utcNow()"
         }
