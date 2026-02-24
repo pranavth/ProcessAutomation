@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{2620485f-bfd9-4d5b-b18f-e0fe9b451156}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="cr482_firstname" select="1" icon="1" preview="1">
+        <row name="result" id="cr482_membershiprecordsid">
+          <cell name="cr482_firstname" width="300" />
+          <cell name="cr482_lastname" width="150" />
+          <cell name="cr482_membership" width="150" />
+          <cell name="cr482_country" width="150" />
+          <cell name="cr482_groups" width="150" />
+          <cell name="cr482_primaryemail" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="cr482_membershiprecords">
+          <attribute name="cr482_membershiprecordsid" />
+          <attribute name="cr482_firstname" />
+          <attribute name="createdon" />
+          <order attribute="cr482_firstname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="cr482_lastname" />
+          <attribute name="cr482_membership" />
+          <attribute name="cr482_country" />
+          <attribute name="cr482_groups" />
+          <attribute name="cr482_primaryemail" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Membership Records" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

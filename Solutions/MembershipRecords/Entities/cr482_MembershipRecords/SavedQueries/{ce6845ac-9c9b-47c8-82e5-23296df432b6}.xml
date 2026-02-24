@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{ce6845ac-9c9b-47c8-82e5-23296df432b6}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="cr482_firstname" select="1" icon="1" preview="1">
+        <row name="result" id="cr482_membershiprecordsid">
+          <cell name="cr482_firstname" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="cr482_membershiprecords">
+          <attribute name="cr482_membershiprecordsid" />
+          <attribute name="cr482_firstname" />
+          <attribute name="createdon" />
+          <order attribute="cr482_firstname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="1" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Inactive Membership Records" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
