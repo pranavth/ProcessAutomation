@@ -1,0 +1,122 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "impersonation": {},
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pt_sharedcommondataserviceforapps_48ed8"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "undefined",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "Please enter your input",
+                  "title": "InputData",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Split_rows": {
+          "runAfter": {
+            "Normalize_Lines": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@split(outputs('Normalize_Lines'), decodeUriComponent('%0A'))"
+        },
+        "Apply_to_each": {
+          "foreach": "@outputs('Skip_header')",
+          "actions": {
+            "Split_columns": {
+              "type": "Compose",
+              "inputs": "@split(item(), '|')"
+            },
+            "Add_a_new_row_to_selected_environment": {
+              "runAfter": {
+                "Split_columns": [
+                  "Succeeded"
+                ]
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "organization": "https://orgce322d8e.crm11.dynamics.com",
+                  "entityName": "cr482_membershiprecordses",
+                  "item/cr482_firstname": "@outputs('Split_columns')[1]",
+                  "item/cr482_country": "@outputs('Split_columns')[3]",
+                  "item/cr482_groups": "@outputs('Split_columns')[4]",
+                  "item/cr482_lastname": "@outputs('Split_columns')[2]",
+                  "item/cr482_membership": "@outputs('Split_columns')[0]",
+                  "item/cr482_primaryemail": "@outputs('Split_columns')[5]",
+                  "accept": "application/json;odata.metadata=minimal"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "CreateRecordWithOrganization"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "Skip_header": [
+              "Succeeded"
+            ]
+          },
+          "type": "Foreach"
+        },
+        "Skip_header": {
+          "runAfter": {
+            "Split_rows": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@skip(outputs('Split_rows'), 1)"
+        },
+        "Normalize_Lines": {
+          "runAfter": {},
+          "type": "Compose",
+          "inputs": "@replace(triggerBody()?['text'], decodeUriComponent('%0D%0A'), decodeUriComponent('%0A'))"
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
